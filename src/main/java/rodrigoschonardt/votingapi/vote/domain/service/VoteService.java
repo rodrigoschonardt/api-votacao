@@ -115,4 +115,8 @@ public class VoteService {
 
         return voteRepository.findAllBySessionId(sessionId, pageable);
     }
+
+    public Integer countByTopicAndOption(Long topicId, Vote.VoteOption option) {
+        return voteRepository.countAllByVoteOptionAndSession_Topic_Id(option, topicId);
+    }
 }

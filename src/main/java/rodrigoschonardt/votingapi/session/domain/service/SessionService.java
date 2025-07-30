@@ -69,10 +69,14 @@ public class SessionService {
         return sessions;
     }
 
+    public Integer countByTopic(Long topicId) {
+        return sessionRepository.countAllByTopicId(topicId);
+    }
+
     public boolean isVotingOpen(Session session) {
         LocalDateTime now = LocalDateTime.now();
 
-        // Talvez fosse bom adicionar uma margem de erro em caso de latência mais alta
+        // Talvez  adicionar uma margem de erro em caso de latência mais alta
         return !now.isBefore(session.getStartTime()) && !now.isAfter(session.getEndTime());
     }
 }

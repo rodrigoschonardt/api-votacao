@@ -11,4 +11,5 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     Page<Session> findAllByTopicId(Long topicId, Pageable pageable);
 
     void deleteAllByTopicId(Long topicId);
+    Integer countAllByTopicId(Long topicId);
 }

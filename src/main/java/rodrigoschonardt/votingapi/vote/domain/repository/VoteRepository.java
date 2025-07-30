@@ -15,4 +15,6 @@ public interface VoteRepository extends JpaRepository<Vote, Long> {
     void deleteAllBySession_Topic_Id(Long sessionTopicId);
     void deleteAllBySessionId(Long sessionId);
     Page<Vote> findAllBySessionId(Long sessionId, Pageable pageable);
+
+    Integer countAllByVoteOptionAndSession_Topic_Id(Vote.VoteOption voteOption, Long sessionTopicId);
 }

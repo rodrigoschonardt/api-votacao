@@ -12,6 +12,7 @@ import rodrigoschonardt.votingapi.topic.domain.model.Topic;
 import rodrigoschonardt.votingapi.topic.domain.service.TopicService;
 import rodrigoschonardt.votingapi.topic.web.dto.AddTopicData;
 import rodrigoschonardt.votingapi.topic.web.dto.TopicDetailsData;
+import rodrigoschonardt.votingapi.topic.web.dto.TopicResultsData;
 import rodrigoschonardt.votingapi.topic.web.dto.UpdateTopicData;
 import rodrigoschonardt.votingapi.topic.web.mapper.TopicMapper;
 
@@ -66,5 +67,12 @@ public class TopicController {
         Page<Topic> topics = topicService.getAll(page);
 
         return ResponseEntity.ok(topics.map(topicMapper::toTopicDetails));
+    }
+
+    @GetMapping("/result/{id}")
+    public ResponseEntity<TopicResultsData> getResults(@PathVariable Long id) {
+        TopicResultsData results = orchestratorService.getTopicResults(id);
+
+        return ResponseEntity.ok(results);
     }
 }
