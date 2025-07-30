@@ -4,8 +4,10 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import rodrigoschonardt.votingapi.orchestrator.VotingOrchestratorService;
 import rodrigoschonardt.votingapi.topic.domain.model.Topic;
 import rodrigoschonardt.votingapi.topic.domain.service.TopicService;
 import rodrigoschonardt.votingapi.topic.web.dto.AddTopicData;
@@ -20,10 +22,12 @@ import java.net.URI;
 public class TopicController {
     private final TopicService topicService;
     private final TopicMapper topicMapper;
+    private final VotingOrchestratorService orchestratorService;
 
-    public TopicController(TopicService topicService, TopicMapper topicMapper) {
+    public TopicController(TopicService topicService, TopicMapper topicMapper, VotingOrchestratorService orchestratorService) {
         this.topicService = topicService;
         this.topicMapper = topicMapper;
+        this.orchestratorService = orchestratorService;
     }
 
     @PostMapping
@@ -43,8 +47,9 @@ public class TopicController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
-        topicService.delete(id);
+    @Transactional
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        orchestratorService.deleteTopicAndSessions(id);
 
         return ResponseEntity.noContent().build();
     }

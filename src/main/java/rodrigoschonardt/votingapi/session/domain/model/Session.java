@@ -13,9 +13,6 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "topic_id", nullable = false)
-    private Long topicId;
-
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
@@ -25,8 +22,8 @@ public class Session {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "topic_id", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "topic_id", nullable = false)
     private Topic topic;
 
     public Long getId() {
@@ -35,14 +32,6 @@ public class Session {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getTopicId() {
-        return topicId;
-    }
-
-    public void setTopicId(Long topicId) {
-        this.topicId = topicId;
     }
 
     public LocalDateTime getStartTime() {

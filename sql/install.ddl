@@ -11,7 +11,7 @@ CREATE TABLE sessions (
     start_time TIMESTAMP NOT NULL,
     end_time TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (topic_id) REFERENCES sessions(id)
+    FOREIGN KEY (topic_id) REFERENCES topics(id)
 );
 
 CREATE TABLE users (
