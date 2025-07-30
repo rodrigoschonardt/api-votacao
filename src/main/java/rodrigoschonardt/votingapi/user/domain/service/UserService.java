@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import rodrigoschonardt.votingapi.shared.exception.EntityNotFoundException;
+import rodrigoschonardt.votingapi.user.domain.external.CpfValidationClient;
+import rodrigoschonardt.votingapi.user.domain.external.dto.CpfValidationResponse;
 import rodrigoschonardt.votingapi.user.domain.model.User;
 import rodrigoschonardt.votingapi.user.domain.repository.UserRepository;
 import rodrigoschonardt.votingapi.user.web.dto.AddUserData;
@@ -15,10 +17,12 @@ public class UserService {
     private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final CpfValidationClient cpfValidationClient;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, CpfValidationClient cpfValidationClient) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.cpfValidationClient = cpfValidationClient;
     }
 
     public User add(AddUserData userData) {
@@ -45,5 +49,12 @@ public class UserService {
     public User get(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User", "ID " + id));
+    }
+
+    public void validateCpf(String cpf) {
+        if (cpfValidationClient.validate(cpf)
+                .status().equals(CpfValidationResponse.UNABLE)) {
+            throw new EntityNotFoundException("CPF", "CPF " + cpf);
+        }
     }
 }

@@ -45,4 +45,10 @@ public class UserController {
 
         return ResponseEntity.ok(userMapper.toUserDetails(user));
     }
+
+    @GetMapping("/{cpf}/validate")
+    public ResponseEntity<Void> validateCpf(@PathVariable String cpf) {
+        userService.validateCpf(cpf);
+        return ResponseEntity.ok().build();
+    }
 }

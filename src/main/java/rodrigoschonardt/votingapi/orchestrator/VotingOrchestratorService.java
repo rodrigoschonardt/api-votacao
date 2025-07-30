@@ -48,7 +48,7 @@ public class VotingOrchestratorService {
                         .setScale(0, RoundingMode.HALF_UP)
                         .intValue() : 0;
 
-        return new TopicResultsData( topicId, topic.getTitle(), topic.getDescription(),
-                countSessions, countYes, countNo, yesPercentage );
+        return new TopicResultsData(topicId, topic.getTitle(), topic.getDescription(),
+                countSessions, countYes, countNo, yesPercentage);
     }
 }
