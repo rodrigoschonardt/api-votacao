@@ -1,5 +1,6 @@
 package rodrigoschonardt.votingapi.vote.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import rodrigoschonardt.votingapi.session.domain.model.Session;
@@ -11,7 +12,29 @@ import java.time.LocalDateTime;
 @Table(name = "votes")
 public class Vote {
     public enum VoteOption {
-        YES, NO
+        YES("Sim"),
+        NO("Não");
+
+        private final String value;
+
+        VoteOption(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @JsonCreator
+        public static VoteOption fromString(String value) {
+            for (VoteOption option : values()) {
+                if (option.name().equalsIgnoreCase(value) ||
+                        option.getValue().equalsIgnoreCase(value)) {
+                    return option;
+                }
+            }
+            throw new IllegalArgumentException("Invalid vote option: " + value);
+        }
     }
 
     @Id

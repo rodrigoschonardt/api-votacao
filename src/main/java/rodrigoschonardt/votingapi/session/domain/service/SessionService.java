@@ -13,6 +13,8 @@ import rodrigoschonardt.votingapi.shared.exception.EntityNotFoundException;
 import rodrigoschonardt.votingapi.topic.domain.model.Topic;
 import rodrigoschonardt.votingapi.topic.domain.service.TopicService;
 
+import java.time.LocalDateTime;
+
 @Service
 public class SessionService {
     private final static Logger LOG = LoggerFactory.getLogger(SessionService.class);
@@ -56,7 +58,7 @@ public class SessionService {
 
     public Session get(Long id) {
         return sessionRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Session", "ID " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Session", "IDa " + id));
     }
 
     public Page<Session> getAllByTopic(Long topicId, Pageable pageable) {
@@ -64,8 +66,13 @@ public class SessionService {
 
         Page<Session> sessions = sessionRepository.findAllByTopicId(topicId, pageable);
 
-        sessions.forEach(session -> session.setTopic(topic));
-
         return sessions;
+    }
+
+    public boolean isVotingOpen(Session session) {
+        LocalDateTime now = LocalDateTime.now();
+
+        // Talvez fosse bom adicionar uma margem de erro em caso de latência mais alta
+        return !now.isBefore(session.getStartTime()) && !now.isAfter(session.getEndTime());
     }
 }

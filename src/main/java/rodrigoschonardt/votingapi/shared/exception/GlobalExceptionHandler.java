@@ -1,9 +1,11 @@
 package rodrigoschonardt.votingapi.shared.exception;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -35,6 +37,17 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(", "));
 
         return ResponseEntity.badRequest().body(Map.of("message", message));
+    }
+
+    @ExceptionHandler(VotingNotAllowedException.class)
+    public ResponseEntity<Map<String, String>> handleVotingNotAllowed(VotingNotAllowedException ex) {
+        Map<String, String> body = Map.of("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, String>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        return ResponseEntity.badRequest().body(Map.of("message", "Invalid JSON format or data type"));
     }
 
     @ExceptionHandler(Exception.class)

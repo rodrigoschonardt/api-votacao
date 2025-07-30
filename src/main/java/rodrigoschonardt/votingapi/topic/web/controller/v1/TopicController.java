@@ -49,7 +49,7 @@ public class TopicController {
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        orchestratorService.deleteTopicAndSessions(id);
+        orchestratorService.deleteTopicSessionsAndVotes(id);
 
         return ResponseEntity.noContent().build();
     }
