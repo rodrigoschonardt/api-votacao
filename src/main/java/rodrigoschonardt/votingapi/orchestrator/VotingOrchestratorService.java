@@ -17,6 +17,7 @@ public class VotingOrchestratorService {
     private final SessionService sessionService;
     private final VoteService voteService;
 
+    // Service responsável por interagir com os múltiplos domínios
     public VotingOrchestratorService(TopicService topicService, SessionService sessionService, VoteService voteService) {
         this.topicService = topicService;
         this.sessionService = sessionService;

@@ -8,7 +8,8 @@ import rodrigoschonardt.votingapi.user.domain.model.User;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "votes")
+@Table(name = "votes",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "session_id"}))
 public class Vote {
     public enum VoteOption {
         YES("Sim"),

@@ -1,5 +1,7 @@
 package rodrigoschonardt.votingapi.topic.web.controller.v1;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +22,7 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1/topics")
+@Tag(name = "Pauta")
 public class TopicController {
     private final TopicService topicService;
     private final TopicMapper topicMapper;
@@ -32,6 +35,7 @@ public class TopicController {
     }
 
     @PostMapping
+    @Operation(summary = "Cadastrar pauta")
     public ResponseEntity<TopicDetailsData> add(@RequestBody @Valid AddTopicData topicData, UriComponentsBuilder uriBuilder) {
         Topic topic = topicService.add(topicData);
 
@@ -41,6 +45,7 @@ public class TopicController {
     }
 
     @PutMapping
+    @Operation(summary = "Atualizar pauta")
     public ResponseEntity<TopicDetailsData> update(@RequestBody @Valid UpdateTopicData topicData) {
         Topic topic = topicService.update(topicData);
 
@@ -49,6 +54,7 @@ public class TopicController {
 
     @DeleteMapping("/{id}")
     @Transactional
+    @Operation(summary = "Deletar pauta")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         orchestratorService.deleteTopicSessionsAndVotes(id);
 
@@ -56,6 +62,7 @@ public class TopicController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar pauta")
     public ResponseEntity<TopicDetailsData> get(@PathVariable Long id) {
         Topic topic = topicService.get(id);
 
@@ -63,6 +70,7 @@ public class TopicController {
     }
 
     @GetMapping
+    @Operation(summary = "Buscar todas as pautas")
     public ResponseEntity<Page<TopicDetailsData>> getAll(Pageable page) {
         Page<Topic> topics = topicService.getAll(page);
 
@@ -70,6 +78,7 @@ public class TopicController {
     }
 
     @GetMapping("/result/{id}")
+    @Operation(summary = "Buscar resultados da pauta")
     public ResponseEntity<TopicResultsData> getResults(@PathVariable Long id) {
         TopicResultsData results = orchestratorService.getTopicResults(id);
 

@@ -11,7 +11,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 14)
+    @Column(unique = true, nullable = false, length = 14)
     private String cpf;
 
     @Column(name = "created_at", nullable = false)

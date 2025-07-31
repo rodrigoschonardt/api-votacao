@@ -1,5 +1,7 @@
 package rodrigoschonardt.votingapi.user.web.controller.v1;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@Tag(name = "Usuário")
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
@@ -24,6 +27,7 @@ public class UserController {
     }
 
     @PostMapping
+    @Operation(summary = "Cadastrar usuário")
     public ResponseEntity<UserDetailsData> add(@RequestBody @Valid AddUserData userData, UriComponentsBuilder uriBuilder) {
         User user = userService.add(userData);
 
@@ -33,6 +37,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar usuário")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.delete(id);
 
@@ -40,6 +45,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar usuário")
     public ResponseEntity<UserDetailsData> get(@PathVariable Long id) {
         User user = userService.get(id);
 
@@ -47,6 +53,7 @@ public class UserController {
     }
 
     @GetMapping("/{cpf}/validate")
+    @Operation(summary = "Validar CPF")
     public ResponseEntity<Void> validateCpf(@PathVariable String cpf) {
         userService.validateCpf(cpf);
         return ResponseEntity.ok().build();

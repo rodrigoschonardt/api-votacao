@@ -22,6 +22,7 @@ services:
     restart: unless-stopped
 
   voting-api:
+    # image: rodrigoschonardt/votingapi-arm64 - processador arm
     image: rodrigoschonardt/votingapi-amd64
     container_name: voting-api
     environment:

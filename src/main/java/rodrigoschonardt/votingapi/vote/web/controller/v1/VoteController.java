@@ -1,5 +1,7 @@
 package rodrigoschonardt.votingapi.vote.web.controller.v1;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,7 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1/votes")
+@Tag(name = "Voto")
 public class VoteController {
     private final VoteService voteService;
     private final VoteMapper voteMapper;
@@ -27,6 +30,7 @@ public class VoteController {
     }
 
     @PostMapping
+    @Operation(summary = "Cadastrar voto")
     public ResponseEntity<VoteDetailsData> add(@RequestBody @Valid AddVoteData voteData, UriComponentsBuilder uriBuilder) {
         Vote vote = voteService.add(voteData);
 
@@ -36,6 +40,7 @@ public class VoteController {
     }
 
     @PutMapping
+    @Operation(summary = "Atualizar voto")
     public ResponseEntity<VoteDetailsData> update(@RequestBody @Valid UpdateVoteData voteData) {
         Vote vote = voteService.update(voteData);
 
@@ -43,6 +48,7 @@ public class VoteController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar voto")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         voteService.delete(id);
 
@@ -50,6 +56,7 @@ public class VoteController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar voto")
     public ResponseEntity<VoteDetailsData> get(@PathVariable Long id) {
         Vote vote = voteService.get(id);
 
@@ -57,6 +64,7 @@ public class VoteController {
     }
 
     @GetMapping("/session/{sessionId}")
+    @Operation(summary = "Buscar todos votos da sessão")
     public ResponseEntity<Page<VoteDetailsData>> getAllBySession(@PathVariable Long sessionId, Pageable pageable) {
         Page<Vote> votes = voteService.getAllBySession(sessionId, pageable);
 

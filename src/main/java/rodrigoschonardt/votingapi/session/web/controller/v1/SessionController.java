@@ -1,5 +1,7 @@
 package rodrigoschonardt.votingapi.session.web.controller.v1;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +20,7 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1/sessions")
+@Tag(name = "Sessão")
 public class SessionController {
     private final SessionService sessionService;
     private final SessionMapper sessionMapper;
@@ -31,6 +34,7 @@ public class SessionController {
     }
 
     @PostMapping
+    @Operation(summary = "Cadastrar sessão")
     public ResponseEntity<SessionDetailsData> add(@RequestBody @Valid AddSessionData sessionData, UriComponentsBuilder uriBuilder) {
         Session session = sessionService.add(sessionData);
 
@@ -41,6 +45,7 @@ public class SessionController {
 
     @DeleteMapping("/{id}")
     @Transactional
+    @Operation(summary = "Deletar sessão")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         votingOrchestratorService.deleteSessionAndVotes(id);
 
@@ -48,6 +53,7 @@ public class SessionController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar sessão")
     public ResponseEntity<SessionDetailsData> get(@PathVariable Long id) {
         Session session = sessionService.get(id);
 
@@ -55,6 +61,7 @@ public class SessionController {
     }
 
     @GetMapping("/topic/{topicId}")
+    @Operation(summary = "Buscar todas sessões da pauta")
     public ResponseEntity<Page<SessionDetailsData>> getAllByTopic(@PathVariable Long topicId, Pageable pageable) {
         Page<Session> sessions = sessionService.getAllByTopic(topicId, pageable);
 
