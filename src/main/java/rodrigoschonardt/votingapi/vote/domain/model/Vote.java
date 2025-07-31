@@ -59,6 +59,10 @@ public class Vote {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public VoteOption getVoteOption() {
         return voteOption;
     }

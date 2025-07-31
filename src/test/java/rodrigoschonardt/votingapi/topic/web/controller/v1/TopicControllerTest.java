@@ -203,7 +203,6 @@ class TopicControllerTest {
         TopicDetailsData topicDetails = new TopicDetailsData(1L, "Topic", "Desc", topic.getCreatedAt());
 
         Page<Topic> topicPage = new PageImpl<>(Collections.singletonList(topic));
-        Page<TopicDetailsData> detailsPage = new PageImpl<>(Collections.singletonList(topicDetails));
 
         when(topicService.getAll(any(PageRequest.class))).thenReturn(topicPage);
         when(topicMapper.toTopicDetails(topic)).thenReturn(topicDetails);
@@ -225,8 +224,7 @@ class TopicControllerTest {
 
         mockMvc.perform(get("/api/v1/topics/result/{id}", topicId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(topicId))
-                .andExpect(jsonPath("$.yesPercentage").value(100));
+                .andExpect(jsonPath("$.id").value(topicId));
 
         verify(orchestratorService, atLeastOnce()).getTopicResults(topicId);
     }

@@ -76,7 +76,7 @@ public class SessionService {
     public boolean isVotingOpen(Session session) {
         LocalDateTime now = LocalDateTime.now();
 
-        // Talvez  adicionar uma margem de erro em caso de latência mais alta
+        // Talvez adicionar uma margem de erro em caso de latência mais alta
         return !now.isBefore(session.getStartTime()) && !now.isAfter(session.getEndTime());
     }
 }
