@@ -58,7 +58,7 @@ public class SessionService {
 
     public Session get(Long id) {
         return sessionRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Session", "IDa " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Session", "ID " + id));
     }
 
     public Page<Session> getAllByTopic(Long topicId, Pageable pageable) {
