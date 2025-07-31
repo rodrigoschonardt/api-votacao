@@ -3,6 +3,7 @@ package rodrigoschonardt.votingapi.user.domain.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import rodrigoschonardt.votingapi.shared.exception.EntityAlreadyExistsException;
 import rodrigoschonardt.votingapi.shared.exception.EntityNotFoundException;
 import rodrigoschonardt.votingapi.user.domain.external.CpfValidationClient;
 import rodrigoschonardt.votingapi.user.domain.external.dto.CpfValidationResponse;
@@ -10,7 +11,6 @@ import rodrigoschonardt.votingapi.user.domain.model.User;
 import rodrigoschonardt.votingapi.user.domain.repository.UserRepository;
 import rodrigoschonardt.votingapi.user.web.dto.AddUserData;
 import rodrigoschonardt.votingapi.user.web.mapper.UserMapper;
-import rodrigoschonardt.votingapi.shared.exception.EntityAlreadyExistsException;
 
 @Service
 public class UserService {

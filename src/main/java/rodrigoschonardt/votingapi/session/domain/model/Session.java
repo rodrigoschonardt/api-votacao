@@ -1,7 +1,6 @@
 package rodrigoschonardt.votingapi.session.domain.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
 import rodrigoschonardt.votingapi.topic.domain.model.Topic;
 
 import java.time.LocalDateTime;

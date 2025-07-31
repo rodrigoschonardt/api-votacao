@@ -6,7 +6,6 @@ import rodrigoschonardt.votingapi.session.web.mapper.SessionMapper;
 import rodrigoschonardt.votingapi.user.domain.model.User;
 import rodrigoschonardt.votingapi.user.web.mapper.UserMapper;
 import rodrigoschonardt.votingapi.vote.domain.model.Vote;
-import rodrigoschonardt.votingapi.vote.domain.repository.VoteRepository;
 import rodrigoschonardt.votingapi.vote.web.dto.AddVoteData;
 import rodrigoschonardt.votingapi.vote.web.dto.UpdateVoteData;
 import rodrigoschonardt.votingapi.vote.web.dto.VoteDetailsData;

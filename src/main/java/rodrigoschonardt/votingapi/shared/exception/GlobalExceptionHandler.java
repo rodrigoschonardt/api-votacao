@@ -1,6 +1,5 @@
 package rodrigoschonardt.votingapi.shared.exception;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

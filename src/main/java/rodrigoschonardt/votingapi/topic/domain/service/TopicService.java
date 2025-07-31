@@ -1,13 +1,10 @@
 package rodrigoschonardt.votingapi.topic.domain.service;
 
-import org.hibernate.sql.Update;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import rodrigoschonardt.votingapi.session.domain.repository.SessionRepository;
-import rodrigoschonardt.votingapi.session.domain.service.SessionService;
 import rodrigoschonardt.votingapi.shared.exception.EntityNotFoundException;
 import rodrigoschonardt.votingapi.topic.domain.model.Topic;
 import rodrigoschonardt.votingapi.topic.domain.repository.TopicRepository;

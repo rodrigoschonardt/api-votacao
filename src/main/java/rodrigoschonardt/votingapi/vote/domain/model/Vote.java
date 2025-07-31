@@ -2,7 +2,6 @@ package rodrigoschonardt.votingapi.vote.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
 import rodrigoschonardt.votingapi.session.domain.model.Session;
 import rodrigoschonardt.votingapi.user.domain.model.User;
 
