@@ -1,0 +1,13 @@
+services:
+  k6:
+    image: grafana/k6
+    container_name: k6-load-test
+    volumes:
+      - ./k6:/tests
+    command: run /tests/votes-load-test.js
+    networks:
+      - voting-network
+
+networks:
+  voting-network:
+    external: true

@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { randomString, randomIntBetween } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';
 
-const BASE_URL = 'http://localhost:8080/api/v1';
+const BASE_URL = 'http://voting-api:8080/api/v1';
 
 const headers = {
     'Content-Type': 'application/json',
