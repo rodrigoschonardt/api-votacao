@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
     private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(EntityAlreadyExistsException.class)
-    public ResponseEntity<Map<String, String>> handleEntityAlreadyExists(EntityAlreadyExistsException ex) {
+    @ExceptionHandler({EntityAlreadyExistsException.class, InvalidSessionStateException.class})
+    public ResponseEntity<Map<String, String>> handleConflict(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Map.of("message", ex.getMessage()));
     }

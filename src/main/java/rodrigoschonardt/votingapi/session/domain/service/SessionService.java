@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import rodrigoschonardt.votingapi.session.domain.model.Session;
 import rodrigoschonardt.votingapi.session.domain.repository.SessionRepository;
 import rodrigoschonardt.votingapi.session.web.dto.AddSessionData;
+import rodrigoschonardt.votingapi.session.web.dto.UpdateSessionData;
 import rodrigoschonardt.votingapi.session.web.mapper.SessionMapper;
 import rodrigoschonardt.votingapi.shared.exception.EntityNotFoundException;
+import rodrigoschonardt.votingapi.shared.exception.InvalidSessionStateException;
 import rodrigoschonardt.votingapi.topic.domain.model.Topic;
 import rodrigoschonardt.votingapi.topic.domain.service.TopicService;
 
@@ -48,6 +50,27 @@ public class SessionService {
         LOG.info("Session deleted successfully with ID: {}", id);
     }
 
+    public Session update(UpdateSessionData sessionData)
+    {
+        Session session = get(sessionData.id());
+
+        if (isVotingOpen(session)) {
+            throw new InvalidSessionStateException(session.getId(), "open");
+        }
+
+        if (isVotingClosed(session)) {
+            throw new InvalidSessionStateException(session.getId(), "closed");
+        }
+
+        session = sessionMapper.updateEntity(sessionData, session);
+
+        session = sessionRepository.save(session);
+
+        LOG.info("Session updated successfully with ID: {}", session.getId());
+
+        return session;
+    }
+
     public void deleteAllByTopic(Long topicId) {
         topicService.get(topicId);
 
@@ -74,9 +97,17 @@ public class SessionService {
     }
 
     public boolean isVotingOpen(Session session) {
+        // Adição da injeção de Clock para testes
         LocalDateTime now = LocalDateTime.now();
 
         // Talvez adicionar uma margem de erro em caso de latência mais alta
         return !now.isBefore(session.getStartTime()) && !now.isAfter(session.getEndTime());
+    }
+
+    public boolean isVotingClosed(Session session) {
+        // Adição da injeção de Clock para testes
+        LocalDateTime now = LocalDateTime.now();
+
+        return now.isAfter(session.getEndTime());
     }
 }

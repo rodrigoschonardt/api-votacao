@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import rodrigoschonardt.votingapi.session.domain.model.Session;
 import rodrigoschonardt.votingapi.session.web.dto.AddSessionData;
 import rodrigoschonardt.votingapi.session.web.dto.SessionDetailsData;
+import rodrigoschonardt.votingapi.session.web.dto.UpdateSessionData;
 import rodrigoschonardt.votingapi.topic.domain.model.Topic;
 import rodrigoschonardt.votingapi.topic.web.mapper.TopicMapper;
 
@@ -24,6 +25,14 @@ public class SessionMapper {
         session.setStartTime(sessionData.startTime() == null ? LocalDateTime.now() : sessionData.startTime());
         session.setEndTime(session.getStartTime().plusMinutes(sessionData.duration() == null ? 1 : sessionData.duration()));
         session.setTopic(topic);
+
+        return session;
+    }
+
+    public Session updateEntity(UpdateSessionData sessionData, Session session)
+    {
+        session.setStartTime(sessionData.startTime() == null ? LocalDateTime.now() : sessionData.startTime());
+        session.setEndTime(session.getStartTime().plusMinutes(sessionData.duration() == null ? 1 : sessionData.duration()));
 
         return session;
     }

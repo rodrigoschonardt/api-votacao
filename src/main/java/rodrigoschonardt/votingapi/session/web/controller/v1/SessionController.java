@@ -14,6 +14,7 @@ import rodrigoschonardt.votingapi.session.domain.model.Session;
 import rodrigoschonardt.votingapi.session.domain.service.SessionService;
 import rodrigoschonardt.votingapi.session.web.dto.AddSessionData;
 import rodrigoschonardt.votingapi.session.web.dto.SessionDetailsData;
+import rodrigoschonardt.votingapi.session.web.dto.UpdateSessionData;
 import rodrigoschonardt.votingapi.session.web.mapper.SessionMapper;
 
 import java.net.URI;
@@ -50,6 +51,14 @@ public class SessionController {
         votingOrchestratorService.deleteSessionAndVotes(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping
+    @Operation(summary = "Atualizar sessão")
+    public ResponseEntity<SessionDetailsData> update(@RequestBody @Valid UpdateSessionData sessionData) {
+        Session session = sessionService.update(sessionData);
+
+        return ResponseEntity.ok(sessionMapper.toSessionDetails(session));
     }
 
     @GetMapping("/{id}")

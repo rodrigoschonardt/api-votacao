@@ -12,8 +12,10 @@ import org.springframework.data.domain.Pageable;
 import rodrigoschonardt.votingapi.session.domain.model.Session;
 import rodrigoschonardt.votingapi.session.domain.repository.SessionRepository;
 import rodrigoschonardt.votingapi.session.web.dto.AddSessionData;
+import rodrigoschonardt.votingapi.session.web.dto.UpdateSessionData;
 import rodrigoschonardt.votingapi.session.web.mapper.SessionMapper;
 import rodrigoschonardt.votingapi.shared.exception.EntityNotFoundException;
+import rodrigoschonardt.votingapi.shared.exception.InvalidSessionStateException;
 import rodrigoschonardt.votingapi.topic.domain.model.Topic;
 import rodrigoschonardt.votingapi.topic.domain.service.TopicService;
 
@@ -277,5 +279,147 @@ public class SessionServiceTest {
         boolean isOpen = sessionService.isVotingOpen(session);
 
         assertFalse(isOpen);
+    }
+
+    @Test
+    void shouldUpdateSessionSuccessfully() {
+        Long sessionId = 1L;
+        UpdateSessionData updateData = new UpdateSessionData(sessionId, LocalDateTime.now().plusMinutes(5), 5);
+
+        Session existingSession = new Session();
+        existingSession.setId(sessionId);
+        existingSession.setStartTime(LocalDateTime.now().plusMinutes(1));
+        existingSession.setEndTime(LocalDateTime.now().plusMinutes(2));
+
+        Session updatedSessionFromMapper = new Session();
+        updatedSessionFromMapper.setId(sessionId);
+        updatedSessionFromMapper.setStartTime(LocalDateTime.now().plusMinutes(5));
+        updatedSessionFromMapper.setEndTime(LocalDateTime.now().plusMinutes(10));
+
+        Session savedSession = new Session();
+        savedSession.setId(sessionId);
+        savedSession.setStartTime(LocalDateTime.now().plusMinutes(5));
+        savedSession.setEndTime(LocalDateTime.now().plusMinutes(10));
+
+        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(existingSession));
+        when(sessionMapper.updateEntity(updateData, existingSession)).thenReturn(updatedSessionFromMapper);
+        when(sessionRepository.save(updatedSessionFromMapper)).thenReturn(savedSession);
+
+        Session result = sessionService.update(updateData);
+
+        assertNotNull(result);
+        assertEquals(sessionId, result.getId());
+        verify(sessionRepository).findById(sessionId);
+        verify(sessionMapper).updateEntity(updateData, existingSession);
+        verify(sessionRepository).save(updatedSessionFromMapper);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingNonExistentSession() {
+        Long sessionId = 99L;
+        UpdateSessionData updateData = new UpdateSessionData(sessionId, LocalDateTime.now().plusMinutes(5), 5);
+
+        when(sessionRepository.findById(sessionId)).thenReturn(Optional.empty());
+
+        EntityNotFoundException exception = assertThrows(
+                EntityNotFoundException.class,
+                () -> sessionService.update(updateData)
+        );
+
+        assertTrue(exception.getMessage().contains("Session"));
+        assertTrue(exception.getMessage().contains("ID " + sessionId));
+        verify(sessionRepository).findById(sessionId);
+        verify(sessionMapper, never()).updateEntity(any(), any());
+        verify(sessionRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingOpenSession() {
+        Long sessionId = 1L;
+        UpdateSessionData updateData = new UpdateSessionData(sessionId, LocalDateTime.now().plusMinutes(5), 5);
+
+        Session openSession = new Session();
+        openSession.setId(sessionId);
+        openSession.setStartTime(LocalDateTime.now().minusMinutes(5));
+        openSession.setEndTime(LocalDateTime.now().plusMinutes(5));
+
+        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(openSession));
+
+        InvalidSessionStateException exception = assertThrows(
+                InvalidSessionStateException.class,
+                () -> sessionService.update(updateData)
+        );
+
+        assertTrue(exception.getMessage().contains("open"));
+        verify(sessionRepository).findById(sessionId);
+        verify(sessionMapper, never()).updateEntity(any(), any());
+        verify(sessionRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingClosedSession() {
+        Long sessionId = 1L;
+        UpdateSessionData updateData = new UpdateSessionData(sessionId, LocalDateTime.now().plusMinutes(5), 5);
+
+        Session closedSession = new Session();
+        closedSession.setId(sessionId);
+        closedSession.setStartTime(LocalDateTime.now().minusMinutes(10));
+        closedSession.setEndTime(LocalDateTime.now().minusMinutes(5));
+
+        when(sessionRepository.findById(sessionId)).thenReturn(Optional.of(closedSession));
+
+        InvalidSessionStateException exception = assertThrows(
+                InvalidSessionStateException.class,
+                () -> sessionService.update(updateData)
+        );
+
+        assertTrue(exception.getMessage().contains("closed"));
+        verify(sessionRepository).findById(sessionId);
+        verify(sessionMapper, never()).updateEntity(any(), any());
+        verify(sessionRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldReturnTrueWhenVotingIsClosed() {
+        Session session = new Session();
+        session.setStartTime(LocalDateTime.now().minusMinutes(10));
+        session.setEndTime(LocalDateTime.now().minusMinutes(5));
+
+        boolean isClosed = sessionService.isVotingClosed(session);
+
+        assertTrue(isClosed);
+    }
+
+    @Test
+    void shouldReturnFalseWhenVotingIsNotYetClosed() {
+        Session session = new Session();
+        session.setStartTime(LocalDateTime.now().minusMinutes(5));
+        session.setEndTime(LocalDateTime.now().plusMinutes(5));
+
+        boolean isClosed = sessionService.isVotingClosed(session);
+
+        assertFalse(isClosed);
+    }
+
+    @Test
+    void shouldReturnFalseWhenVotingHasNotStartedYet() {
+        Session session = new Session();
+        session.setStartTime(LocalDateTime.now().plusMinutes(5));
+        session.setEndTime(LocalDateTime.now().plusMinutes(10));
+
+        boolean isClosed = sessionService.isVotingClosed(session);
+
+        assertFalse(isClosed);
+    }
+
+    @Test
+    void shouldReturnTrueWhenVotingJustClosed() {
+        Session session = new Session();
+        session.setStartTime(LocalDateTime.now().minusMinutes(5));
+        session.setEndTime(LocalDateTime.now().minusSeconds(1));
+
+        boolean isClosed = sessionService.isVotingClosed(session);
+
+        assertTrue(isClosed);
     }
 }

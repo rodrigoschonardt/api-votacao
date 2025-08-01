@@ -18,8 +18,10 @@ import rodrigoschonardt.votingapi.session.domain.model.Session;
 import rodrigoschonardt.votingapi.session.domain.service.SessionService;
 import rodrigoschonardt.votingapi.session.web.dto.AddSessionData;
 import rodrigoschonardt.votingapi.session.web.dto.SessionDetailsData;
+import rodrigoschonardt.votingapi.session.web.dto.UpdateSessionData;
 import rodrigoschonardt.votingapi.session.web.mapper.SessionMapper;
 import rodrigoschonardt.votingapi.shared.exception.EntityNotFoundException;
+import rodrigoschonardt.votingapi.shared.exception.InvalidSessionStateException;
 import rodrigoschonardt.votingapi.topic.domain.model.Topic;
 import rodrigoschonardt.votingapi.topic.web.dto.TopicDetailsData;
 
@@ -271,5 +273,97 @@ class SessionControllerTest {
                 .andExpect(jsonPath("$.message").exists());
 
         verify(sessionService).getAllByTopic(eq(nonExistentTopicId), any(Pageable.class));
+    }
+
+    @Test
+    void shouldUpdateSessionAndReturn200() throws Exception {
+        Long sessionId = 1L;
+        LocalDateTime newStartTime = LocalDateTime.now().plusMinutes(10);
+        UpdateSessionData updateSessionData = new UpdateSessionData(sessionId, newStartTime, 5);
+
+        Topic topic = new Topic();
+        topic.setId(100L);
+        topic.setTitle("Updated Topic Title");
+        topic.setDescription("Updated Topic Description");
+        topic.setCreatedAt(LocalDateTime.now().minusDays(1));
+
+        Session updatedSession = new Session();
+        updatedSession.setId(sessionId);
+        updatedSession.setTopic(topic);
+        updatedSession.setStartTime(newStartTime);
+        updatedSession.setEndTime(newStartTime.plusMinutes(5));
+        updatedSession.setCreatedAt(LocalDateTime.now().minusHours(1));
+
+        SessionDetailsData sessionDetailsData = getSessionDetailsData(topic, updatedSession);
+
+        when(sessionService.update(any(UpdateSessionData.class))).thenReturn(updatedSession);
+        when(sessionMapper.toSessionDetails(updatedSession)).thenReturn(sessionDetailsData);
+
+        mockMvc.perform(put("/api/v1/sessions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateSessionData)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(sessionId))
+                .andExpect(jsonPath("$.startTime").exists())
+                .andExpect(jsonPath("$.endTime").exists());
+
+        verify(sessionService, atLeastOnce()).update(any(UpdateSessionData.class));
+        verify(sessionMapper).toSessionDetails(updatedSession);
+    }
+
+    @Test
+    void shouldReturn400WhenUpdatingSessionWithInvalidData() throws Exception {
+        UpdateSessionData invalidUpdateData = new UpdateSessionData(null, LocalDateTime.now().minusHours(1), 1);
+
+        mockMvc.perform(put("/api/v1/sessions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidUpdateData)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturn404WhenUpdatingNonExistentSession() throws Exception {
+        Long nonExistentSessionId = 99L;
+        UpdateSessionData updateSessionData = new UpdateSessionData(nonExistentSessionId, LocalDateTime.now().plusHours(1), 2);
+
+        when(sessionService.update(any(UpdateSessionData.class)))
+                .thenThrow(new EntityNotFoundException("Session", "ID " + nonExistentSessionId));
+
+        mockMvc.perform(put("/api/v1/sessions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateSessionData)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    void shouldReturn409WhenUpdatingOpenSession() throws Exception {
+        Long sessionId = 1L;
+        UpdateSessionData updateSessionData = new UpdateSessionData(sessionId, LocalDateTime.now().plusHours(1), 3);
+
+        when(sessionService.update(any(UpdateSessionData.class)))
+                .thenThrow(new InvalidSessionStateException(sessionId, "open"));
+
+        mockMvc.perform(put("/api/v1/sessions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateSessionData)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    void shouldReturn409WhenUpdatingClosedSession() throws Exception {
+        Long sessionId = 1L;
+        UpdateSessionData updateSessionData = new UpdateSessionData(sessionId, LocalDateTime.now().plusHours(1), 3);
+
+        when(sessionService.update(any(UpdateSessionData.class)))
+                .thenThrow(new InvalidSessionStateException(sessionId, "closed"));
+
+        mockMvc.perform(put("/api/v1/sessions")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateSessionData)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").exists());
+
     }
 }
